@@ -5,6 +5,7 @@ typedef struct InstanceParameters {
     item stake;
     bool vouchers[32];
     bool showman;
+		bool pokedex;
 
     item deckCards[52];
     int deckSize;
@@ -39,6 +40,7 @@ instance i_new(seed s) {
     inst.params = params;
     return inst;
 }
+
 double get_node_child(instance* inst, ntype nts[], int ids[], int num) {
     double temp = 0; // will store value set to node, which has some post-processing at the end
     int node_id = -1;
@@ -73,6 +75,7 @@ double get_node_child(instance* inst, ntype nts[], int ids[], int num) {
     inst->rngCache.nodes[node_id].rngState = roundDigits(fract(inst->rngCache.nodes[node_id].rngState*1.72431234+2.134453429141),13);
     return (inst->rngCache.nodes[node_id].rngState + inst->hashedSeed)/2;
 }
+
 double random(instance* inst, ntype nts[], int ids[], int num) {
     if (num > 0) {
         inst->rng = randomseed(get_node_child(inst, nts, ids, num));
@@ -295,6 +298,18 @@ void init_locks(instance* inst, int ante, bool fresh_profile, bool fresh_run) {
         inst->locked[Petroglyph] = true;
         inst->locked[Retcon] = true;
         inst->locked[Palette] = true;
+
+				// pkm vouchers upgrades
+				inst->locked[EnergyResearch] = true;
+				inst->locked[SuperRod] = true;
+
+				// specific pokemons (ig)
+				inst->locked[Chansey] = true; // Lucky card
+				inst->locked[Tangela] = true; // Wild card
+				inst->locked[Rhyhorn] = true; // Stone card
+
+				// specific items
+				inst->locked[DubiousDisc] = true; // until you have Porygon2
     }
 }
 

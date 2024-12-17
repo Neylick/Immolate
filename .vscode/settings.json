@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "time.h": "c"
-    }
+			"*.pde": "pde",
+			"time.h": "c",
+			"immolate.h": "c"
+		}
 }
