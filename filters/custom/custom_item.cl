@@ -846,7 +846,8 @@ typedef enum ShopItemType {
     ItemType_Planet,
     ItemType_PlayingCard,
     ItemType_Spectral,
-		ItemType_ItemCard
+		ItemType_Energy,
+		ItemType_Item,
 } itemtype;
 
 typedef struct ShopInstance {
@@ -855,7 +856,8 @@ typedef struct ShopInstance {
     double planetRate;
     double playingCardRate;
     double spectralRate;
-		double itemCardRate;
+		double energyRate;
+		double itemRate;
 } shop;
 
 typedef enum JokerRarity {

@@ -188,10 +188,22 @@ rarity next_joker_rarity(instance* inst, rsrc itemSource, int ante) {
 // todo : for fun, find a shiny gastly first joker seed or smthing
 item next_joker_edition(instance* inst, rsrc itemSource, int ante) {
     double poll = random(inst, (__private ntype[]){N_Type, N_Source, N_Ante}, (__private int[]){R_Joker_Edition, itemSource, ante}, 3);
-    if (poll > 0.997) return Negative;
-    if (poll > 0.994) return Polychrome;
-    if (poll > 0.98) return Holographic;
-    if (poll > 0.96) return Foil;
+    //if (poll > 0.997) return Negative;
+    //if (poll > 0.994) return Polychrome;
+    //if (poll > 0.98) return Holographic;
+    //if (poll > 0.96) return Foil;
+
+		// the way this works for modded stuff SUX :
+		double total_w = (.003 + .003 + .014 + .02 + .002);
+		total_w = total_w + (total_w / 4. * 96.); // no edition = 96%
+		//total_w = total_w / 100.;
+
+		if (poll > 1 - .003 / total_w) return Negative;
+    if (poll > 1 - .006 / total_w) return Polychrome;
+    if (poll > 1 - .02 / total_w) return Holographic;
+    if (poll > 1 - .04 / total_w) return Foil;
+		if (poll > 1 - .042 / total_w) return Shiny;
+
     return No_Edition;
 }
 
@@ -201,11 +213,7 @@ jokerdata next_joker_with_info(instance* inst, rsrc itemSource, int ante) {
     item nextJoker;
 
     if (nextRarity == Rarity_Legendary) {
-        #if V_AT_MOST(1,0,0,99)
-        nextJoker = randchoice_common(inst, R_Joker_Legendary, itemSource, ante, LEGENDARY_JOKERS);
-        #else
         nextJoker = randchoice_simple(inst, R_Joker_Legendary, LEGENDARY_JOKERS);
-        #endif
     } else if (nextRarity == Rarity_Rare) {
         nextJoker = randchoice_common(inst, R_Joker_Rare, itemSource, ante, RARE_JOKERS);
     } else if (nextRarity == Rarity_Uncommon) {
@@ -264,6 +272,8 @@ shop get_shop_instance(instance* inst) {
     double planetRate = 4;
     double playingCardRate = 0;
     double spectralRate = 0;
+		double energyRate = .75;
+		double itemRate = .15;
 
     if (inst->params.deck == Ghost_Deck) {
         spectralRate = 2;
@@ -290,13 +300,21 @@ shop get_shop_instance(instance* inst) {
         tarotRate, 
         planetRate, 
         playingCardRate, 
-        spectralRate
+        spectralRate,
+				energyRate,
+				itemRate
     };
     return _shop;
 }
 
 double get_total_rate(shop shopInstance) {
-    return shopInstance.jokerRate + shopInstance.tarotRate + shopInstance.planetRate + shopInstance.playingCardRate + shopInstance.spectralRate;
+    return shopInstance.jokerRate 
+		+ shopInstance.tarotRate 
+		+ shopInstance.planetRate 
+		+ shopInstance.playingCardRate 
+		+ shopInstance.spectralRate 
+		+ shopInstance.energyRate 
+		+ shopInstance.itemRate;
 }
 
 itemtype get_item_type(shop shopInstance, double generatedValue) {
@@ -320,7 +338,29 @@ itemtype get_item_type(shop shopInstance, double generatedValue) {
         return ItemType_PlayingCard;
     }
 
-    return ItemType_Spectral;
+		generatedValue -= shopInstance.playingCardRate;
+
+		if (generatedValue < shopInstance.spectralRate) {
+			return ItemType_Spectral;
+		}
+
+		generatedValue -= shopInstance.spectralRate;
+
+		// pkm shop items
+		
+		if (generatedValue < shopInstance.itemRate) {
+			return ItemType_Item;
+		}
+
+		generatedValue -= shopInstance.itemRate;
+
+		if (generatedValue < shopInstance.energyRate) {
+			return ItemType_Energy;
+		}
+
+		generatedValue -= shopInstance.energyRate;
+
+		return ItemType_Spectral; // default case, todo : check how this is actually handled.
 }
 
 shopitem next_shop_item(instance* inst, int ante) {
@@ -342,6 +382,10 @@ shopitem next_shop_item(instance* inst, int ante) {
     } else if (type == ItemType_PlayingCard) {
         // TODO: Playing card support.
         shopItem = RETRY;
+    } else if (type == ItemType_Energy) {
+        shopItem = randchoice_common(inst, R_Energy, S_Shop, ante, PKM_ENERGY);
+    } else if (type == ItemType_Item) {
+        shopItem = randchoice_common(inst, R_Item, S_Shop, ante, PKM_ITEMS);
     }
 
     shopitem nextShopItem = {type, shopItem, shopJoker};
@@ -379,6 +423,7 @@ void arcana_pack(item out[], int size, instance* inst, int ante) {
         inst->locked[out[i]] = false;
     }
 }
+
 void celestial_pack(item out[], int size, instance* inst, int ante) {
     for (int i = 0; i < size; i++) {
         out[i] = next_planet(inst, S_Celestial, ante, true);
@@ -388,6 +433,7 @@ void celestial_pack(item out[], int size, instance* inst, int ante) {
         inst->locked[out[i]] = false;
     }
 }
+
 void spectral_pack(item out[], int size, instance* inst, int ante) {
     for (int i = 0; i < size; i++) {
         out[i] = next_spectral(inst, S_Spectral, ante, true);
