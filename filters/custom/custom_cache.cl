@@ -142,11 +142,11 @@ text type_str(int x) {
 
 				case R_Pocket :									 return init_text("pocket", 6); //  pocket pack card type, > 60% -> energy
 				case R_PocketCardMatch :				 return init_text("match", 5);
-				case R_PokeBall :							 	 return init_text("pokeball", 8); 
-				case R_GreatBall :							 return init_text("greatball", 9); 
-				case R_UltraBall :							 return init_text("ultraball", 9); 
-				case R_MasterBall :							 return init_text("masterball", 10); 
-				case R_Transformation :          return init_text("transformation", 14);
+				case R_PokeBall :							 	 return init_text("c_poke_pokeball", 15); 
+				case R_GreatBall :							 return init_text("c_poke_greatball", 16); 
+				case R_UltraBall :							 return init_text("c_poke_ultraball", 16); 
+				case R_MasterBall :							 return init_text("c_poke_masterball", 17); 
+				case R_Transformation :          return init_text("c_poke_transformation", 21);
 				case R_OtherSet :                return init_text("Other", 5);
 
 				case R_Item :                    return init_text("Item", 4); 

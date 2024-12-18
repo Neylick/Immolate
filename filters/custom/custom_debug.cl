@@ -37,6 +37,7 @@ void print_pkmitem(item i)
 		case ShinyStone : printf("ShinyStone"); break;
 		case TwisterSpoon : printf("TwisterSpoon"); break;
 
+		case UltraBall : printf("UltraBall"); break;
 		case MasterBall : printf("MasterBall"); break;
 		case Transformation : printf("Transformation"); break;
 

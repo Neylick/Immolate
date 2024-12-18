@@ -7,7 +7,7 @@
 
 //test stuff
 
-long filter(instance* inst)
+long _filter(instance* inst)
 {
 	init_locks(inst, 1, false, true); // init locked stuff
 
@@ -66,7 +66,7 @@ long filter(instance* inst)
 
 // PERKEO + MASTERBALL
 
-long _filter(instance* inst) 
+long filter(instance* inst) 
 {
 	init_locks(inst, 1, false, true); // init locked stuff
 

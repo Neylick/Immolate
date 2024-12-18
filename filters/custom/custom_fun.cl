@@ -102,9 +102,10 @@ item next_planet(instance* inst, rsrc itemSource, int ante, bool soulable) {
 // it's actually more complex in implementation (chances to replace items with evolution/matching energies) but that's not that important.
 item next_pkmitem(instance* inst, rsrc itemSource, int ante, bool soulable)
 {
-	double r = random(inst, (__private ntype[]){N_Type}, (__private int[]){R_Pocket}, 1);
-	if(r > .60) // energy
+	double card_type = random(inst, (__private ntype[]){N_Type}, (__private int[]){R_Pocket}, 1);
+	if(card_type > .60) // energy
 	{
+		// match type doesn't matter if you have no "energized" jokers, skipping
 		if(soulable && (inst->params.showman || !inst->locked[Transformation]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_Transformation, R_Energy, ante}, 4) > 0.997) {
 			return Transformation;
 		}
@@ -112,12 +113,14 @@ item next_pkmitem(instance* inst, rsrc itemSource, int ante, bool soulable)
 	}
 	else // item card
 	{
-		r = random(inst, (__private ntype[]){N_Type}, (__private int[]){R_PocketCardMatch}, 1);
+		double evo_it_chance = random(inst, (__private ntype[]){N_Type}, (__private int[]){R_PocketCardMatch}, 1);
 		// for now this has a bug in the pokermon mod, let's try with anyways...
 		// > 92% of items are *supposed* to match a required evolution item
 		// > ifs are reversed, 92% are just a random mess but forced => NO MASTERBALL .
-		//if(r > .92) return randchoice_common(inst, R_Item, itemSource, ante, PKM_ITEMS);
+		//if(evo_it_chance > .92) return randchoice_common(inst, R_Item, itemSource, ante, PKM_ITEMS);
 		//else
+
+		// evo item chance (without the bug) doesn't matter if no joker can evolve (skipping)
 		{
 			item forcedKey = RETRY;
 			if(soulable && (inst->params.showman || !inst->locked[UltraBall]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_UltraBall , R_Item, ante}, 4) > 0.99) {
