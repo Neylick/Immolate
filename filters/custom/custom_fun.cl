@@ -71,18 +71,22 @@ item next_pack(instance* inst, int ante) {
 
 
 item next_tarot(instance* inst, rsrc itemSource, int ante, bool soulable) {
-    if (soulable) 
+	if (soulable) 
+	{
+		item forcedKey = RETRY;
+		if ((inst->params.showman || !inst->locked[The_Soul])) 
 		{
-			item forcedKey = RETRY;
-			if ((inst->params.showman || !inst->locked[The_Soul]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_Tarot, ante}, 3) > 0.997) {
-					forcedKey = The_Soul;
+			if(random(inst, (__private ntype[]){N_Type, N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_GreatBall, R_Tarot, ante}, 4) > .975) {
+				forcedKey = GreatBall;
 			}
-			if ((inst->params.showman || !inst->locked[GreatBall]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_OtherSet, ante}, 3) > 0.975) {
-					forcedKey = GreatBall;
+			if(random(inst, (__private ntype[]){N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_Tarot, ante}, 3) > .997) {
+				forcedKey = The_Soul;
 			}
-			if (forcedKey != RETRY) return forcedKey;
-    }
-    return randchoice_common(inst, R_Tarot, itemSource, ante, TAROTS);
+		}
+		
+		if (forcedKey != RETRY) return forcedKey;
+	}
+	return randchoice_common(inst, R_Tarot, itemSource, ante, TAROTS);
 }
 
 item next_planet(instance* inst, rsrc itemSource, int ante, bool soulable) {
@@ -92,28 +96,39 @@ item next_planet(instance* inst, rsrc itemSource, int ante, bool soulable) {
     return randchoice_common(inst, R_Planet, itemSource, ante, PLANETS);
 }
 
+// todo : check masterball/ultraball collision interaction (very very low chance).
+// todo : check 92% cond stuff
+
 // it's actually more complex in implementation (chances to replace items with evolution/matching energies) but that's not that important.
 item next_pkmitem(instance* inst, rsrc itemSource, int ante, bool soulable)
 {
 	double r = random(inst, (__private ntype[]){N_Type}, (__private int[]){R_Pocket}, 1);
 	if(r > .60) // energy
 	{
-		if(soulable && (inst->params.showman || !inst->locked[Transformation]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_Energy, ante}, 3) > 0.997) {
+		if(soulable && (inst->params.showman || !inst->locked[Transformation]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_Transformation, R_Energy, ante}, 4) > 0.997) {
 			return Transformation;
 		}
 		return randchoice_common(inst, R_Energy, itemSource, ante, PKM_ENERGY);
 	}
 	else // item card
 	{
-		item forcedKey = RETRY;
-		if(soulable && (inst->params.showman || !inst->locked[MasterBall]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_Item, ante}, 3) > 0.997) {
-			forcedKey = MasterBall;
+		r = random(inst, (__private ntype[]){N_Type}, (__private int[]){R_PocketCardMatch}, 1);
+		// for now this has a bug in the pokermon mod, let's try with anyways...
+		// > 92% of items are *supposed* to match a required evolution item
+		// > ifs are reversed, 92% are just a random mess but forced => NO MASTERBALL .
+		//if(r > .92) return randchoice_common(inst, R_Item, itemSource, ante, PKM_ITEMS);
+		//else
+		{
+			item forcedKey = RETRY;
+			if(soulable && (inst->params.showman || !inst->locked[UltraBall]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_UltraBall , R_Item, ante}, 4) > 0.99) {
+				forcedKey = UltraBall;
+			}
+			if(soulable && (inst->params.showman || !inst->locked[MasterBall]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_MasterBall , R_Item, ante}, 4) > 0.997) {
+				forcedKey = MasterBall;
+			}
+			if(forcedKey != RETRY) return forcedKey;
+			return randchoice_common(inst, R_Item, itemSource, ante, PKM_ITEMS);
 		}
-		if(soulable && (inst->params.showman || !inst->locked[UltraBall]) && random(inst, (__private ntype[]){N_Type, N_Type, N_Ante}, (__private int[]){R_Soul, R_OtherSet, ante}, 3) > 0.99) {
-			forcedKey = UltraBall;
-		}
-		if(forcedKey != RETRY) return forcedKey;
-		return randchoice_common(inst, R_Item, itemSource, ante, PKM_ITEMS);
 	}
 }
 

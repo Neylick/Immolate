@@ -1,10 +1,16 @@
 // Find whatever you're looking for in a modded thingy
 #include "filters/custom/custom_base_inc.cl"
 
-// PERKEO + MASTERBALL
+// CREATED FOR POKERMON 2.1.0
+// WILL ***NOT*** WORK WITH ANY OTHER VERSION
+// (includind while not limited to, fixing commits and other similar in-between patches)
+
+//test stuff
 
 long filter(instance* inst)
 {
+	init_locks(inst, 1, false, true); // init locked stuff
+
 	int mb_spot = -1;
 	int gb_spot = -1;
 	int ub_spot = -1;
@@ -20,6 +26,7 @@ long filter(instance* inst)
 	}
 
 	if(gb_spot == -1) return 0;
+	//else return 1; // comment this for further tests
 
 	item first_pack = next_pack(inst, 1); // jumbo joker pack
 	item scnd_pack = next_pack(inst, 1);
@@ -46,16 +53,18 @@ long filter(instance* inst)
 	}
 	int res = 3;
 	
-	if((mb_spot == -1) || (trans_spot == -1) || (ub_spot == -1)) return 0;
+	if((mb_spot == -1) && (trans_spot == -1) && (ub_spot == -1)) return 0;
 
-	print_consumable_pack(inst, 1, pack_info(Mega_Arcana_Pack), arcanaPack);
-	printf("\n");
-	print_consumable_pack(inst, 1, pack_info(scnd_pack), pockePack);
-	printf("\n");
+	// print_consumable_pack(inst, 1, pack_info(Mega_Arcana_Pack), arcanaPack);
+	// printf("\n");
+	// print_consumable_pack(inst, 1, pack_info(scnd_pack), pockePack);
+	// printf("\n");
 
 	return 1;
 
 }
+
+// PERKEO + MASTERBALL
 
 long _filter(instance* inst) 
 {

@@ -50,6 +50,7 @@ typedef enum RandomType {
 		R_PokeBall,
 		R_GreatBall,
 		R_UltraBall,
+		R_Transformation,
 
 		R_OtherSet,
 
@@ -145,6 +146,7 @@ text type_str(int x) {
 				case R_GreatBall :							 return init_text("greatball", 9); 
 				case R_UltraBall :							 return init_text("ultraball", 9); 
 				case R_MasterBall :							 return init_text("masterball", 10); 
+				case R_Transformation :          return init_text("transformation", 14);
 				case R_OtherSet :                return init_text("Other", 5);
 
 				case R_Item :                    return init_text("Item", 4); 
